@@ -1,0 +1,45 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+header {
+  background: lightgreen;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 50px;
+  font-weight: bold;
+  height: 10vh;
+  vertical-align: middle;
+}
+
+.main-content {
+  height: 80vh;
+  display: flex;
+  align-items: center;
+}
+
+.button--wave {
+  display: table;
+  margin: 0 auto;
+  background-color: lightgreen;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+footer {
+  background: lightgreen;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 50px;
+  font-weight: bold;
+  height: 10vh;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
