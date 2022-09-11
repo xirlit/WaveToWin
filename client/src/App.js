@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import './App.css'
-import ethers from 'ethers';
+import abi from './utils/WavePortal.json'
+import { ethers } from 'ethers';
 
 function App() {
   const { ethereum } = window;
   const [currentAccount, setCurrentAccount] = useState("");
+
+  const contractAddress = "0xEE31e923fD654e63e65328240a761A3079C90e8D";
+  const contractABI = abi.abi;
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -40,6 +44,41 @@ function App() {
     }
   }
 
+  const wave = async () => {
+    try {
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        let count = await wavePortalContract.getTotalWaves();
+        console.log("Retrieved total wave count...", count.toNumber());
+
+        const waveTxn = await wavePortalContract.wave();
+        console.log("Mining...", waveTxn.hash);
+
+        await waveTxn.wait();
+        console.log("Mined -- ", waveTxn.hash);
+
+        count = await wavePortalContract.getTotalWaves();
+        console.log("Retrieved total wave count...", count.toNumber());
+      } else {
+        console.log("Ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const getWaveCount = async () => {
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const signer = provider.getSigner();
+    const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+
+    let count = await wavePortalContract.getTotalWaves();
+    console.log(count.toNumber());
+  }
+
   useEffect(() => {
     checkIfWalletIsConnected().then(result => !result && connectWallet());
   }, [])
@@ -48,10 +87,13 @@ function App() {
     <>
       <header>We testing the Web3</header>
       <div className='main-content'>
-        <button className='button--wave'>Click to wave bro</button>
-        {!currentAccount &&
-          <button className='button--wave' onClick={connectWallet}>Connect a wallet</button>
-        }
+        <div className='buttons-area'>
+          <button className='button' onClick={wave}>Click to wave bro</button>
+          <button className='button' onClick={getWaveCount}>Get total wave count</button>
+          {!currentAccount &&
+            <button className='button' onClick={connectWallet}>Connect a wallet</button>
+          }
+        </div>
       </div>
       <footer>Looks good so far</footer>
     </>

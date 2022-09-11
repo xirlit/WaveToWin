@@ -12,23 +12,28 @@ header {
   font-size: 50px;
   font-weight: bold;
   height: 10vh;
-  vertical-align: middle;
 }
 
 .main-content {
   height: 80vh;
   display: flex;
-  align-items: center;
+  justify-content: center;
 }
 
-.button--wave {
+.buttons-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.button {
   display: table;
-  margin: 0 auto;
   background-color: lightgreen;
   border-radius: 6px;
   padding: 10px;
   font-size: 20px;
   font-weight: bold;
+  margin-top: 16px;
 }
 
 footer {
