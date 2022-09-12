@@ -1,50 +1,102 @@
+:root {
+  --main-color: rgb(184, 19, 55);
+  --font-color: white;
+}
+
 body {
   margin: 0;
   padding: 0;
+  background-color: rgb(233, 233, 233);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 header {
-  background: lightgreen;
+  background: var(--main-color);
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 50px;
+  font-size: 65px;
   font-weight: bold;
+  color: var(--font-color);
   height: 10vh;
 }
 
-.main-content {
-  height: 80vh;
+.main-page {
+  display: block;
+  max-width: 70rem;
+  margin: 0 auto;
+}
+
+.flex-container {
   display: flex;
+  padding: 28px;
+}
+
+.flex-container--col {
+  height: 74vh;
+  display: flex;
+  flex: 1 1;
   justify-content: center;
 }
 
-.buttons-area {
+.flex-container--col:first-child {
+  padding-right: 20px;
+}
+
+.container--centered {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background-color: white;
+  padding: 20px;
+}
+
+.container--centered > p {
+  font-size: 50px;
+  text-align: center;
+}
+
+.container--centered > input[type="text"] {
+  height: 40px;
+  padding-left: 20px;
+  border-radius: 6px;
+  font-size: 15px;
 }
 
 .button {
   display: table;
-  background-color: lightgreen;
+  background: var(--main-color);
   border-radius: 6px;
   padding: 10px;
   font-size: 20px;
   font-weight: bold;
   margin-top: 16px;
+  color: var(--font-color);
+  cursor: pointer;
 }
 
 footer {
-  background: lightgreen;
+  background: var(--main-color);
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 50px;
+  font-size: 65px;
   font-weight: bold;
   height: 10vh;
-  position: fixed;
   bottom: 0;
+  color: var(--font-color);
   width: 100%;
+  flex-shrink: 0;
+}
+
+.wave-info {
+  margin-top: 20px;
+}
+
+.waves {
+  text-align: center;
+  overflow-y: auto;
+  max-height: 230px;
 }
