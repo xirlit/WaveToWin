@@ -9,46 +9,54 @@ function App() {
   const messageRef = React.createRef();
   const [allWaves, setAllWaves] = useState([]);
 
-  // const contractAddress = "0xEE31e923fD654e63e65328240a761A3079C90e8D";
-  const contractAddress = "0x3748Db3d8c560D827cea3261785443eBa5D798fa";
+  // address and JSON file for our contract 
+  const contractAddress = "0x126ac14ebF13C2dF11FA7f147f3F7a7039E2F2E5";
   const contractABI = abi.abi;
 
+  // checks if the wallet is connected
+  // returns success
   const checkIfWalletIsConnected = async () => {
     try {
+
+      // check if user has MetaMask
       if (!ethereum) {
         alert("Get MetaMask!");
-        return;
+        return false;
       }
 
+      // get all users accounts
       const accounts = await ethereum.request({ method: "eth_accounts" });
 
+      // if we have some accounts, we set the first one as active
       if (accounts.length !== 0) {
         const account = accounts[0];
-        console.log("Found an authorized account:", account);
         setCurrentAccount(account);
         return true;
       } else {
-        console.log("No authorized account found")
         return false;
       }
+
     } catch (error) {
       console.log(error);
       return false;
     }
   }
 
+  // prompts to connect a wallet 
   const connectWallet = async () => {
     try {
+      // MetaMask prompt window
       const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-
-      console.log("Connected", accounts[0]);
       setCurrentAccount(accounts[0]);
     } catch (error) {
       console.log(error);
     }
   }
 
+  // initializes connection to the contract
+  // returns contract object
   const initializeWavePortal = () => {
+    // if we dont have MetaMask or connected account, we return null
     if (!(ethereum && currentAccount)) {
       return null;
     }
@@ -60,38 +68,34 @@ function App() {
     return wavePortalContract ?? null;
   }
 
+  // waves at the contract
   const wave = async () => {
     try {
-      if (ethereum) {
-        const wavePortalContract = initializeWavePortal();
+      const wavePortalContract = initializeWavePortal();
 
-        if (!wavePortalContract)
-          return;
+      // we dont have a contract connection - no account connected / no metamask / wrong contract address
+      if (!wavePortalContract)
+        return;
 
-        let message = messageRef.current.value;
-        let count = await wavePortalContract.getTotalWaves();
-        console.log("Retrieved total wave count...", count.toNumber());
+      let message = messageRef.current.value;
 
-        const waveTxn = await wavePortalContract.wave(message);
-        console.log("Mining...", waveTxn.hash);
+      const waveTxn = await wavePortalContract.wave(message);
+      await waveTxn.wait();
 
-        await waveTxn.wait();
-        console.log("Mined -- ", waveTxn.hash);
+      let count = await wavePortalContract.getTotalWaves();
+      console.log("Retrieved total wave count...", count.toNumber());
+      getAllWaves();
 
-        count = await wavePortalContract.getTotalWaves();
-        console.log("Retrieved total wave count...", count.toNumber());
-        getAllWaves();
-      } else {
-        console.log("Ethereum object doesn't exist!");
-      }
     } catch (error) {
       console.log(error);
     }
   }
 
+  // writes a total number of waves to console
   const getWaveCount = async () => {
     const wavePortalContract = initializeWavePortal();
 
+    // we dont have a contract connection - no account connected / no metamask / wrong contract address
     if (!wavePortalContract)
       return;
 
@@ -99,18 +103,20 @@ function App() {
     console.log(count.toNumber());
   }
 
+  // calls the contract to return info about all waves
   const getAllWaves = async () => {
     const wavePortalContract = initializeWavePortal();
 
+    // we dont have a contract connection - no account connected / no metamask / wrong contract address
     if (!wavePortalContract)
       return;
 
     let allWaves = await wavePortalContract.getAllWaves();
     setAllWaves(allWaves);
-    console.log(allWaves);
   }
 
   useEffect(() => {
+    // if we dont have a connected account, prompt MetaWave to connect one
     checkIfWalletIsConnected().then(result => !result && connectWallet());
   }, [])
 
@@ -133,7 +139,11 @@ function App() {
                   <button className='button' onClick={getWaveCount}>Get total wave count</button>
                   <button className='button' onClick={getAllWaves}>Get all waves</button>
                 </>
-                : <button className='button' onClick={connectWallet}>Connect a wallet</button>
+                :
+                <>
+                  <p>Please connect your wallet 🥺</p>
+                  <button className='button' onClick={connectWallet}>Connect a wallet</button>
+                </>
               }
             </div>
           </div>
