@@ -119,7 +119,13 @@ function App() {
         return;
 
       let allWaves = await wavePortalContract.getAllWaves();
-      setAllWaves(allWaves);
+      setAllWaves(allWaves.map(wave => {
+        return {
+          callerAddress: wave.from,
+          timestamp: new Date(wave.timestamp * 1000),
+          message: wave.message
+        }
+      }));
     }
     catch (e) {
       console.log(e);
@@ -133,6 +139,34 @@ function App() {
 
   useEffect(() => {
     getAllWaves();
+
+    let wavePortalContract;
+
+    const onNewWave = (from, timestamp, message) => {
+      console.log("NewWave", from, timestamp, message);
+      setAllWaves(prevState => [
+        ...prevState,
+        {
+          callerAddress: from,
+          timestamp: new Date(timestamp * 1000),
+          message: message,
+        },
+      ]);
+    };
+
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+
+      wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+      wavePortalContract.on("NewWave", onNewWave);
+    }
+
+    return () => {
+      if (wavePortalContract) {
+        wavePortalContract.off("NewWave", onNewWave);
+      }
+    };
   }, [currentAccount]);
 
   return (
@@ -168,7 +202,7 @@ function App() {
                     <div key={index} className='wave-info'>
                       <div><b>Caller address:</b> {wave.callerAddress}</div>
                       <div><b>Message:</b> {wave.message}</div>
-                      <div><b>Timestamp:</b> {wave.timestamp.toNumber()}</div>
+                      <div><b>Timestamp:</b> {wave.timestamp.toString()}</div>
                     </div>
                   );
                 })
