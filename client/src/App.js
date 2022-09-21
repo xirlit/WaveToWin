@@ -10,7 +10,8 @@ function App() {
   const [allWaves, setAllWaves] = useState([]);
 
   // address and JSON file for our contract 
-  const contractAddress = "0x126ac14ebF13C2dF11FA7f147f3F7a7039E2F2E5";
+  const contractAddress = "0x396E9dC1650f1caA0b8876D37fe0D078459a8b7F";
+
   const contractABI = abi.abi;
 
   // checks if the wallet is connected
@@ -64,7 +65,6 @@ function App() {
     const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
     const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
-
     return wavePortalContract ?? null;
   }
 
@@ -79,7 +79,7 @@ function App() {
 
       let message = messageRef.current.value;
 
-      const waveTxn = await wavePortalContract.wave(message);
+      const waveTxn = await wavePortalContract.wave(message, { gasLimit: 300000 });
       await waveTxn.wait();
 
       let count = await wavePortalContract.getTotalWaves();
@@ -93,26 +93,37 @@ function App() {
 
   // writes a total number of waves to console
   const getWaveCount = async () => {
-    const wavePortalContract = initializeWavePortal();
+    try {
 
-    // we dont have a contract connection - no account connected / no metamask / wrong contract address
-    if (!wavePortalContract)
-      return;
+      const wavePortalContract = initializeWavePortal();
 
-    let count = await wavePortalContract.getTotalWaves();
-    console.log(count.toNumber());
+      // we dont have a contract connection - no account connected / no metamask / wrong contract address
+      if (!wavePortalContract)
+        return;
+
+      let count = await wavePortalContract.getTotalWaves();
+      console.log(count.toNumber());
+    }
+    catch (e) {
+      console.log(e);
+    }
   }
 
   // calls the contract to return info about all waves
   const getAllWaves = async () => {
-    const wavePortalContract = initializeWavePortal();
+    try {
+      const wavePortalContract = initializeWavePortal();
 
-    // we dont have a contract connection - no account connected / no metamask / wrong contract address
-    if (!wavePortalContract)
-      return;
+      // we dont have a contract connection - no account connected / no metamask / wrong contract address
+      if (!wavePortalContract)
+        return;
 
-    let allWaves = await wavePortalContract.getAllWaves();
-    setAllWaves(allWaves);
+      let allWaves = await wavePortalContract.getAllWaves();
+      setAllWaves(allWaves);
+    }
+    catch (e) {
+      console.log(e);
+    }
   }
 
   useEffect(() => {
